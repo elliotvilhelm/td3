@@ -12,7 +12,6 @@ A complete implementation of the Twin Delayed Deep Deterministic Policy Gradient
 ## Installation
 
 ```bash
-source venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -142,6 +141,3 @@ L_actor = -E[Q₁(s, μ(s))]
 ## References
 
 - Fujimoto, S., van Hoof, H., & Meger, D. (2018). [Addressing Function Approximation Error in Actor-Critic Methods](https://arxiv.org/abs/1802.09477). ICML 2018.
-```
-
-</rewritten_file>
