@@ -1,9 +1,14 @@
+
 # TD3 Implementation for Pendulum-v1
 
 A complete implementation of the Twin Delayed Deep Deterministic Policy Gradient (TD3) algorithm for the Pendulum-v1 environment using PyTorch.
 
 ![](static/td3_training_progress.png)
-![](static/pendulum.gif)
+<p align="center">
+  <img src="static/pendulum.gif" alt="Pendulum Animation" width="400">
+</p>
+
+
 ## Installation
 
 ```bash
@@ -137,3 +142,6 @@ L_actor = -E[Q₁(s, μ(s))]
 ## References
 
 - Fujimoto, S., van Hoof, H., & Meger, D. (2018). [Addressing Function Approximation Error in Actor-Critic Methods](https://arxiv.org/abs/1802.09477). ICML 2018.
+```
+
+</rewritten_file>
