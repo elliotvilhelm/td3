@@ -143,7 +143,7 @@ def main():
     parser.add_argument("--no-render", action="store_true", help="Disable rendering during test")
     
     # GIF arguments
-    parser.add_argument("--output", default="pendulum.gif", help="Output GIF filename (default: pendulum.gif)")
+    parser.add_argument("--output", default="static/pendulum.gif", help="Output GIF filename (default: static/pendulum.gif)")
     parser.add_argument("--duration", type=int, default=5, help="GIF duration in seconds (default: 5)")
     
     # Training arguments
@@ -154,7 +154,7 @@ def main():
     parser.add_argument("--policy-noise", type=float, default=0.2, help="Policy noise σ (default: 0.2)")
     parser.add_argument("--noise-clip", type=float, default=0.5, help="Noise clipping (default: 0.5)")
     parser.add_argument("--policy-freq", type=int, default=2, help="Policy update frequency (default: 2)")
-    parser.add_argument("--exploration-noise", type=float, default=0.1, help="Exploration noise (default: 0.1)")
+    parser.add_argument("--exploration-noise", type=float, default=0.05, help="Exploration noise (default: 0.05)")
     parser.add_argument("--learning-rate", type=float, default=3e-4, help="Learning rate (default: 3e-4)")
     parser.add_argument("--model-name", default="td3_pendulum", help="Model name for saving (default: td3_pendulum)")
     

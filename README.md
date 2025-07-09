@@ -2,6 +2,8 @@
 
 A complete implementation of the Twin Delayed Deep Deterministic Policy Gradient (TD3) algorithm for the Pendulum-v1 environment using PyTorch.
 
+![](static/td3_training_progress.png)
+![](static/pendulum.gif)
 ## Installation
 
 ```bash

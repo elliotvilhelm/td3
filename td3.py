@@ -14,6 +14,16 @@ class Actor(nn.Module):
         self.layer_2 = nn.Linear(400, 300)
         self.layer_3 = nn.Linear(300, action_dim)
         self.max_action = max_action
+        
+        self._init_weights()
+
+    def _init_weights(self):
+        for layer in [self.layer_1, self.layer_2, self.layer_3]:
+            nn.init.xavier_uniform_(layer.weight)
+            nn.init.constant_(layer.bias, 0)
+        # Initialize final layer with smaller weights
+        nn.init.uniform_(self.layer_3.weight, -3e-3, 3e-3)
+        nn.init.constant_(self.layer_3.bias, 0)
 
     def forward(self, state):
         a = F.relu(self.layer_1(state))
@@ -27,6 +37,13 @@ class Critic(nn.Module):
         self.layer_1 = nn.Linear(state_dim + action_dim, 400)
         self.layer_2 = nn.Linear(400, 300)
         self.layer_3 = nn.Linear(300, 1)
+        
+        self._init_weights()
+
+    def _init_weights(self):
+        for layer in [self.layer_1, self.layer_2, self.layer_3]:
+            nn.init.xavier_uniform_(layer.weight)
+            nn.init.constant_(layer.bias, 0)
 
     def forward(self, state, action):
         state_action = torch.cat([state, action], 1)
@@ -91,10 +108,12 @@ class TD3:
             # Optimize the critics
             self.critic_1_optimizer.zero_grad()
             critic_1_loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.critic_1.parameters(), 1.0)
             self.critic_1_optimizer.step()
 
             self.critic_2_optimizer.zero_grad()
             critic_2_loss.backward()
+            torch.nn.utils.clip_grad_norm_(self.critic_2.parameters(), 1.0)
             self.critic_2_optimizer.step()
 
             # Delayed policy updates
@@ -105,6 +124,7 @@ class TD3:
                 # Optimize the actor
                 self.actor_optimizer.zero_grad()
                 actor_loss.backward()
+                torch.nn.utils.clip_grad_norm_(self.actor.parameters(), 1.0)
                 self.actor_optimizer.step()
 
                 # Update the frozen target networks
@@ -160,7 +180,7 @@ class ReplayBuffer:
 
 def train_td3(max_episodes=200, max_steps=500, batch_size=100, discount=0.99, 
                tau=0.005, policy_noise=0.2, noise_clip=0.5, policy_freq=2, 
-               exploration_noise=0.1, learning_rate=3e-4, model_name="td3_pendulum"):
+               exploration_noise=0.05, learning_rate=3e-4, model_name="td3_pendulum"):
     env = gym.make('Pendulum-v1')
     state_dim = env.observation_space.shape[0]
     action_dim = env.action_space.shape[0]
@@ -188,10 +208,8 @@ def train_td3(max_episodes=200, max_steps=500, batch_size=100, discount=0.99,
             next_state, reward, terminated, truncated, _ = env.step(action)
             done = terminated or truncated
 
-            # Store transition
             replay_buffer.add((state, action, next_state, reward, done))
 
-            # Train TD3
             if len(replay_buffer.storage) > batch_size:
                 td3.train(replay_buffer, batch_size, discount, tau, policy_noise, noise_clip, policy_freq)
 
@@ -208,12 +226,11 @@ def train_td3(max_episodes=200, max_steps=500, batch_size=100, discount=0.99,
             avg_reward = np.mean(total_rewards[-10:])
             print(f"Episode {episode}, Average Reward: {avg_reward:.2f}")
             writer.add_scalar('Average_Reward', avg_reward, episode)
+        
 
-    # Save the model
     td3.save(f"models/{model_name}")
     writer.close()
     
-    # Plot results
     plt.figure(figsize=(10, 5))
     plt.plot(total_rewards)
     plt.title('TD3 Training Progress - Pendulum-v1')
